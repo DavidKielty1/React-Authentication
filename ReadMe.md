@@ -51,6 +51,12 @@ _using ContextAPI_
 AuthContextProvider will be exported as a named "export const AuthContextProvider".
 . AuthContextProvider will wrap around the entire app in the index.js component.
 
-Import { useContext } from 'react' in the components that require the contextValue.
+Import { _useContext_ } from 'react' in the components that require the contextValue.
 . i.e. in the AuthForm component within this app.
 . const authCtx = useContext(AuthContext);
+
+Import { _useRef_ } from 'react' to store form inputs into constants.
+. add ref={_constant which holds ref value_} to input element in form
+. const newPasswordInputRef = useRef();
+. const submitHandler = (e) => {
+. const enteredNewPassword = newPasswordInputRef.current.value;
