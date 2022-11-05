@@ -60,3 +60,40 @@ Import { _useRef_ } from 'react' to store form inputs into constants.
 . const newPasswordInputRef = useRef();
 . const submitHandler = (e) => {
 . const enteredNewPassword = newPasswordInputRef.current.value;
+
+Logout context function -
+. Firebase does not store token on server side, we merely need to set token to null
+. authCtx.logout(); -> logoutHandler = () => { setToken(null) }
+
+_Navigation guards_ Protecting pages in front end app.
+. Employed within the app route
+
+_Local Storage stayLoggedIn approach_
+. logIn Firebase API has expiry rate
+. return object has idToken and expiresIn keys. Default 1hr. (Advanced: refresh with refresh token)
+. in order to stay logged in the token must be stored somewhere outside of the react state.
+. . if stored in a JS variable, the value would be cleared when page reloads.
+. browser storage mechanisms = cookies
+. . easier option -> local storage (vulnerable to cross-site scripting attacks).
+
+. login stores token not just in state, but also in local storage. when logged out we need to clear it in local storage.
+. in addition, when page loads we want to look in to storage to find token and use it without user needing to send new request first
+. new Date().getTime(); token.expiresIn.toISOString() -> set number to string
+
+_Remove and add items to local storage_
+. localStorage.setItem({'token', token})
+. localStorage.removeItem('token')
+
+_Caluculating token expire times and auto-logging out_
+. check auth-context.js for timing caluculations code
+
+_Clearing logout timer if user logs out manually_
+. clearTimeout(logoutTimer) within logoutHandler.
+. logoutTimer = setTimeout(logoutHandler, remainingTime)
+
+_useCallback_
+. setting logoutHandler as a dependency in useEffect (autho-context.js) to protect from infinite loops or unncecessary side-effects
+. useCallback requires no dependencies in this case as localStorage.removeItem and clearTimeout are browser functions not specific to current react app.
+. setToken() is part of useState() thus react ensures this will never change (triggering dependency useEffect)
+. logoutTimer is outwith the component as a global varaiable so will not be reloaded triggering useEffect either.
+. . thus these are not needed to be added as dependencies to useCallback();
